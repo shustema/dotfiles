@@ -1,0 +1,88 @@
+# i3status configuration file # see "man i3status" for documentation
+
+general {
+    colors = true
+    interval = 5
+}
+
+###Settings
+### Conky 
+conky {
+    config = {
+        'update_interval': 10,             # update interval for conky
+###        'update_interval_on_battery': 60  # update interval when on battery
+###        'format_human_readable': True,    # if False, print in bytes
+###        'short_units': True,              # shortens units, eg kiB->k, GiB->G
+        'uppercase': True,                # upper placeholders
+    }
+}
+
+### Order of displayed widgets
+order += 'lm_sensors'
+order += 'sysdata'
+order += "conky filesystem"
+
+order += 'networkmanager'
+order += 'vpn_status'
+order += 'volume_status'
+order += 'battery_level'
+order += 'clock'
+order += "arch_updates"
+order += 'insync'
+
+#order += "battery 0"
+
+lm_sensors {
+    	format_chip = '{format_sensor}'
+    	format_sensor = '[\?if=name=core_0 Temp] '
+    	format_sensor += '[\?color=auto.input {input}°C]'
+    	sensors = ['core_0']
+}
+
+conky filesystem {
+    	#home filesystem 
+    	format = 'home [\?color=violet {fs_used_perc /home}%] '
+
+    	#root filesystem
+    	format += 'root [\?color=violet {fs_used_perc /}%]'
+
+    	thresholds = [
+        	(0, 'darkgray'), (0.001, 'good'), (50, 'degraded'),
+        	(75, 'orange'), (85, 'bad')
+	]
+}
+
+conky {
+    config = {
+        'console_bar_fill': "'#'",
+        'console_bar_unfill': "'_'",
+        'default_bar_width': 10,
+    }
+}
+
+networkmanager {
+    on_click 1 = 'exec nm-connection-editor'
+    format = '{format_device}'
+    format_device = '{ap1_ssid} {ap1_bars} {ip4_address1}'
+}
+
+sysdata { 
+    format = '[\?color=cpu_used_percent CPU: {cpu_used_percent}%], [\?color=mem_used_percent Mem: {mem_used_percent}%], [\?color=swap_used_percent Swap: {swap_used_percent}%]'
+}
+
+arch_updates {
+    format = 'AUR [\?color=total {total}]'
+	on_click 1 = 'exec i3-sensible-terminal -e sudo pacman -Syud'
+}
+
+insync {
+	on_click 1 = 'exec insync'
+}
+
+clock {
+	format_time = '%Y-%m-%d %I:%M:%S'
+}
+
+battery_level {
+    on_click 1 = 'exec sudo tlpui'
+}
