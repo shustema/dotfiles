@@ -43,7 +43,7 @@ vnoremap y "*y
 vnoremap Y "*Y
 nnoremap p "*p
 nnoremap P "*P
-"map Y $y
+map Y $y
 
 " Map <C-L> (redraw screen) to also turn off search highlighting until the
 " next search
@@ -60,6 +60,14 @@ nnoremap <C-W>o :call MaximizeToggle()<CR>
 nnoremap <C-W><C-O> :call MaximizeToggle()<CR>
 nnoremap <leader>mm :call MaximizeToggle()<CR>
 
+" Backup
+set backup
+set backupdir=~/.vim/backup//
+set writebackup
+set backupcopy=yes
+au BufWritePre * let &bex = '@' . strftime("%F.%H:%M")
+
+" Don't need this with NerdTree
 function! MaximizeToggle()
   if exists("s:maximize_session")
     exec "source " . s:maximize_session
@@ -85,38 +93,134 @@ set splitright
 
 call plug#begin('~/.vim/plugged')
 
+" status bar
 Plug 'vim-airline/vim-airline'
+Plug 'tpope/vim-fugitive'
+" look and feel
 Plug 'xolox/vim-colorscheme-switcher'
 Plug 'xolox/vim-misc'
+Plug 'powerline/powerline-fonts'
+Plug 'ryanoasis/vim-devicons'
+" formatting tools
 Plug 'sheerun/vim-polyglot'
-" bugger
+Plug 'lervag/vimtex'
+Plug 'vhdirk/vim-cmake'
+" buffer
 Plug 'jeetsukumaran/vim-buffergator'
 Plug 'kien/ctrlp.vim'
 " tagging
-"Plug 'multilobyte/gtags-cscope'
 Plug 'ludovicchabant/vim-gutentags'
-"Plug 'skywind3000/gutentags_plus'
-
+Plug 'google/vim-maktaba'
+Plug 'google/vim-codefmt'
+Plug 'google/vim-glaive'
+" autocomplete 
 if has ('nvim')
   Plug 'shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'zchee/deoplete-clang'
 else
   Plug 'shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
+  Plug 'mhinz/vim-grepper'
+  Plug 'justmao945/vim-clang'
 endif
 
-let g:deoplete#enable_at_startup = 1
+" snippets
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
+" nerdtree
+Plug 'preservim/nerdtree'
 
 call plug#end()
 
+set guifont=DroidSansMono\ Nerd\ Font\ 11
+
 "------------------------------------------------------------
-" Autocomplete and snippets
-"
-imap <S-TAB>  <Plug>(neosnippet_expand_or_jump)
-smap <S-TAB>  <Plug>(neosnippet_expand_or_jump)
-xmap <S-TAB>  <Plug>(neosnippet_expand_target)
+" Auto Formater
+
+augroup autoformat_settings
+  autocmd FileType bzl AutoFormatBuffer buildifier
+  autocmd FileType c,cpp,proto,javascript AutoFormatBuffer clang-format
+  autocmd FileType dart AutoFormatBuffer dartfmt
+  autocmd FileType go AutoFormatBuffer gofmt
+  autocmd FileType gn AutoFormatBuffer gn
+  autocmd FileType html,css,sass,scss,less,json AutoFormatBuffer js-beautify
+  autocmd FileType java AutoFormatBuffer google-java-format
+  autocmd FileType python AutoFormatBuffer yapf
+  " Alternative: autocmd FileType python AutoFormatBuffer autopep8
+  autocmd FileType rust AutoFormatBuffer rustfmt
+  autocmd FileType vue AutoFormatBuffer prettier
+augroup END
+
+" Deoplete Clang
+let g:deoplete#enable_at_startup = 1
+
+syntax enable
+filetype plugin indent on
+
+" Latex config
+set nospell
+autocmd BufRead,BufNewFile *.tex setlocal spell spelllang=en_us
+inoremap <leader>w <c-g>u<Esc>[s1z=`]a<c-g>u
+let g:livepreview_previewer = 'zathura'
+
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:vimtex_quickfix_mode=0
+set conceallevel=1
+let g:tex_conceal='abdmg'
+
+"------------------------------------------------------------
+" air-line
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+"------------------------------------------------------------
+" NerdTree
+ autocmd StdinReadPre * let s:std_in=1
+ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+map <C-n> :NERDTreeToggle<CR>
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFoldersOpenClose = 1
+
+let g:DevIconsDefaultFolderOpenSymbol='' " symbol for open folder (f07c)
+let g:WebDevIconsUnicodeDecorateFolderNodesDefaultSymbol='' " symbol for closed folder (f07b)
+
+function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
+ exec 'autocmd filetype nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+ exec 'autocmd filetype nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+endfunction
+
+call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
+call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
+call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('html', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('styl', 'cyan', 'none', 'cyan', '#151515')
+call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
+call NERDTreeHighlightFile('coffee', 'Red', 'none', 'red', '#151515')
+call NERDTreeHighlightFile('js', 'Red', 'none', '#ffa500', '#151515')
+call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
+
+"------------------------------------------------------------
+" Auto complete and snippets
+
+imap <C-L>  <Plug>(neosnippet_expand_or_jump)
+smap <C-L>  <Plug>(neosnippet_expand_or_jump)
+xmap <C-L>  <Plug>(neosnippet_expand_target)
 
 inoremap<expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
 
@@ -124,8 +228,22 @@ if has('conceal')
   set conceallevel=2 concealcursor=niv
 endif
 
+"auto close {
+function! s:CloseBracket()
+    let line = getline('.')
+    if line =~# '^\s*\(struct\|class\|enum\) '
+        return "{\<Enter>};\<Esc>O"
+    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
+        " Probably inside a function call. Close it off.
+        return "{\<Enter>});\<Esc>O"
+    else
+        return "{\<Enter>}\<Esc>O"
+    endif
+endfunction
+inoremap <expr> {<Enter> <SID>CloseBracket()
+
 "------------------------------------------------------------
-" Buffer stuf
+" Buffer stuff
 
 " setup tagging
 " enable gtags module
@@ -145,11 +263,14 @@ let g:ctrlp_working_path_mode = 'r'
 let g:airline#extensions#tabline#enabled = 1
 
 " Use a leader instead of the actual named binding
-nmap <leader>p :CtrlP<cr>
+nmap <leader>cp :CtrlP<cr>
 
 nmap <leader>bb :CtrlPBuffer<cr>
 nmap <leader>bm :CtrlPMixed<cr>
 nmap <leader>bs :CtrlPMRU<cr>
+nmap <leader>jj :BuffergatorMruCyclePrev<cr>
+nmap <leader>kk :BuffergatorMruCycleNext<cr>
+nmap <leader>bl :BuffergatorOpen<cr>
 
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
@@ -161,23 +282,8 @@ let g:ctrlp_custom_ignore = {
   \ 'link': 'some_bad_symbolic_links',
   \ }
 
-" Use the right side of the screen
 let g:buffergator_viewport_split_policy = 'R'
-
-" I want my own keymappings...
 let g:buffergator_suppress_keymaps = 1
-
-" Looper buffers
-"let g:buffergator_mru_cycle_loop = 1
-
-" Go to the previous buffer open
-nmap <leader>jj :BuffergatorMruCyclePrev<cr>
-
-" Go to the next buffer open
-nmap <leader>kk :BuffergatorMruCycleNext<cr>
-
-" View the entire list of buffers open
-nmap <leader>bl :BuffergatorOpen<cr>
 
 " Shared bindings from Solution #1 from earlier
 nmap <leader>T :enew<cr>
@@ -196,3 +302,10 @@ nnoremap <leader>cc :CtrlPClearCache<CR>
 
 " ctags mapping
 nnoremap <leader>ct :!(ctags -R --exclude=build)<CR>
+
+" Prettier
+nmap <leader>pp :FormatCode<CR>
+nmap <leader>bs :!bash .vimsource<CR>
+nmap <leader>bb :!bash build.sh<CR>
+nmap <leader>bm :!bash make.sh<CR>
+nmap <leader>bd :!bash docs.sh<CR>
