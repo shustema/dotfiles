@@ -137,6 +137,7 @@ Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 " nerdtree
 Plug 'preservim/nerdtree'
+Plug 'google/yapf'
 
 call plug#end()
 
@@ -153,14 +154,20 @@ augroup autoformat_settings
   autocmd FileType gn AutoFormatBuffer gn
   autocmd FileType html,css,sass,scss,less,json AutoFormatBuffer js-beautify
   autocmd FileType java AutoFormatBuffer google-java-format
-  autocmd FileType python AutoFormatBuffer yapf
-  " Alternative: autocmd FileType python AutoFormatBuffer autopep8
+  "autocmd FileType python AutoFormatBuffer yapf
+  autocmd FileType python AutoFormatBuffer autopep8
   autocmd FileType rust AutoFormatBuffer rustfmt
   autocmd FileType vue AutoFormatBuffer prettier
 augroup END
+let g:formatter_yapf_style = 'pep8'
 
 " Deoplete Clang
 let g:deoplete#enable_at_startup = 1
+let g:clang_vim_exec = 'vim'
+let g:clang_diagsopt = ''
+let g:clang_auto=0
+let g:clang_include_sysheaders = 1
+let g:clang_include_sysheaders_from_gcc = 1
 
 syntax enable
 filetype plugin indent on
