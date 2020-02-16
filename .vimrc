@@ -1,5 +1,8 @@
 " Vimrc
 
+set autoread
+au CursorHold * checktime
+
 " Get Plugged
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
