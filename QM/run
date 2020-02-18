@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd src
+g++ minterms.cpp -o minterms
+g++ qm.cc -o qm
+
+./minterms
