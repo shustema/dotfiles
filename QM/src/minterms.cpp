@@ -51,7 +51,7 @@ int main() {
     // make header
     os << to_string(N) + "_bit\n";
     for (string s : {"A", "B"})
-      for (int i = 0; i < N; i++)
+      for (int i = N - 1; i >= 0; i--)
         os << s + "(" + to_string(i) + ") ";
     os << "Cin\n";
 
