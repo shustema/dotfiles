@@ -146,6 +146,11 @@ call plug#end()
 
 set guifont=DroidSansMono\ Nerd\ Font\ 11
 
+let g:webdevicons_enable_nerdtree = 1
+let g:webdevicons_enable_ctrlp = 1
+let g:webdevicons_enable_airline_tabline = 1
+let g:webdevicons_enable_airline_statusline = 1
+
 "------------------------------------------------------------
 " Auto Formater
 
@@ -211,7 +216,7 @@ let g:NERDTreeDirArrowCollapsible = '▾'
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
 
-let g:DevIconsDefaultFolderOpenSymbol='' " symbol for open folder (f07c)
+let g:DevIconsDefaultFolderOpenSymbol='' "symbol for open folder (f07c)
 let g:WebDevIconsUnicodeDecorateFolderNodesDefaultSymbol='' " symbol for closed folder (f07b)
 
 function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
@@ -283,12 +288,12 @@ let g:airline#extensions#tabline#enabled = 1
 " Use a leader instead of the actual named binding
 nmap <leader>cp :CtrlP<cr>
 
-nmap <leader>bb :CtrlPBuffer<cr>
-nmap <leader>bm :CtrlPMixed<cr>
-nmap <leader>bs :CtrlPMRU<cr>
+nmap <leader>vv :CtrlPBuffer<cr>
+nmap <leader>vm :CtrlPMixed<cr>
+nmap <leader>vs :CtrlPMRU<cr>
 nmap <leader>jj :BuffergatorMruCyclePrev<cr>
 nmap <leader>kk :BuffergatorMruCycleNext<cr>
-nmap <leader>bl :BuffergatorOpen<cr>
+nmap <leader>vl :BuffergatorOpen<cr>
 
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
