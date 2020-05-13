@@ -141,6 +141,11 @@ Plug 'Shougo/neosnippet-snippets'
 " nerdtree
 Plug 'preservim/nerdtree'
 Plug 'google/yapf'
+" colors
+Plug 'ap/vim-css-color'
+" vim wiki
+Plug 'vimwiki/vimwiki'
+Plug 'dhruvasagar/vim-table-mode'
 
 call plug#end()
 
@@ -177,6 +182,8 @@ let g:clang_diagsopt = ''
 let g:clang_auto=0
 let g:clang_include_sysheaders = 1
 let g:clang_include_sysheaders_from_gcc = 1
+let g:python_host_prog = '/usr/bin/python'
+let g:python3_host_prog = '/usr/bin/python3.8'
 
 syntax enable
 filetype plugin indent on
@@ -185,10 +192,10 @@ filetype plugin indent on
 set nospell
 autocmd BufRead,BufNewFile *.tex setlocal spell spelllang=en_us
 inoremap <leader>w <c-g>u<Esc>[s1z=`]a<c-g>u
-let g:livepreview_previewer = 'zathura'
+let g:livepreview_previewer = 'qpdfview'
 
 let g:tex_flavor='latex'
-let g:vimtex_view_method='zathura'
+let g:vimtex_view_method='qpdfview'
 let g:vimtex_quickfix_mode=0
 set conceallevel=1
 let g:tex_conceal='abdmg'
@@ -201,6 +208,19 @@ let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
+
+"------------------------------------------------------------
+" vimwiki
+let wiki_1 = {}
+let wiki_1.path = '~/.vim/vimwiki/'
+let wiki_1.nested_syntaxes = { 'python' : 'python', 
+        \'c++': 'cpp',
+        \'css': 'css'}
+let wiki_1.syntax = 'markdown'
+
+let wiki_2 = {}
+let wiki_2.autowriteall = 1
+let g:vimwiki_list = [wiki_1,wiki_2]
 
 "------------------------------------------------------------
 " NerdTree
